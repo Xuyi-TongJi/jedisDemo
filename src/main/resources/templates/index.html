@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <script th:src="js/jquery-3.3.1.js"></script>
+    <script th:src="js/jquery-1.11.0.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script th:src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script>
+        $(function () {
+            // 发送验证码
+            $("#btn_sendCode").click(function () {
+                $.post("/user/sendCode", $("#codeForm").serialize(),
+                    function (response) {
+                        if (response.flag){
+                            $("#codeArea").html(response.code);
+                        } else {
+                            $("#codeArea").html(response.message);
+                        }
+                    });
+            });
+            // 验证，登录
+            $("#btn_verifyCode").click(function () {
+                $.post("/user/verifyCode", $("#codeForm").serialize(),
+                    function (response) {
+                        // 校验成功
+                        if (response.execution) {
+                            location.href = "../templates/success.html";
+                        } else {
+                            $("#login_msg").html(response.message);
+                        }
+                    })
+            })
+        });
+    </script>
+</head>
+<body>
+<form method="post" th:action="@{/user/verifyCode}" id="codeForm">
+    <label for="phone">
+        <input id="phone" type="text" name="phone"/>
+    </label>
+    <input id="btn_sendCode" type="button" value="发送验证码"/>
+    <br/>
+    <span id="codeArea"></span>
+    <label for="code"><input id="code" type="text" name="code"/></label>
+    <input type="button" value="登录" id="btn_verifyCode">
+    <span id="login_msg"></span>
+</form>
+</body>
+</html>
